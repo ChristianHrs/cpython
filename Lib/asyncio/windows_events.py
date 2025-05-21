@@ -583,6 +583,12 @@ class IocpProactor:
             fut.set_result(None)
             return fut
 
+        # Issue: 89696
+        try:
+            conn.inet_pton(conn.family, address)
+        except OSError as oe:
+            conn.getaddrinfo(host, port, family=conn.family)
+
         self._register_with_iocp(conn)
         # The socket needs to be locally bound before we call ConnectEx().
         try:
